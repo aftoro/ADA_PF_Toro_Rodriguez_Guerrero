@@ -1,0 +1,86 @@
+#include <iostream>
+#include <chrono>
+#include <fstream>
+#include <iomanip>
+#include "parser.hpp"
+#include "mergesort.hpp"
+#include "binary_search.hpp"
+
+int main(int argc, char* argv[]) {
+    if (argc < 2) {
+        std::cerr << "Uso: ./ada_pf data/archivo.csv\n";
+        return 1;
+    }
+
+    std::vector<Solicitud> solicitudes = leerCSV(argv[1]);
+
+    int churnNo = 0, tenureMax = 0, tenureMin = 999, nulos = 0;
+    double sumaMensual = 0.0;
+    for (const auto& s : solicitudes) {
+        if (!s.churn) churnNo++;
+        if (s.tenure > tenureMax) tenureMax = s.tenure;
+        if (s.tenure < tenureMin) tenureMin = s.tenure;
+        sumaMensual += s.monthlyCharges;
+        if (s.totalCharges == 0.0 && s.tenure == 0) nulos++;
+    }
+
+    std::cout << "Churn = No : " << churnNo << "\n";
+    std::cout << "tenure max : " << tenureMax <<  "\n";
+    std::cout << "tenure min : " << tenureMin << "\n";
+    std::cout << "MonthlyCharges promedio : " << std::fixed << std::setprecision(2)
+              << (sumaMensual / solicitudes.size()) << " USD\n";
+
+    // MergeSort
+    auto inicio = std::chrono::high_resolution_clock::now();
+    mergeSort(solicitudes, 0, (int)solicitudes.size() - 1);
+    auto fin = std::chrono::high_resolution_clock::now();
+    double ms7043 = std::chrono::duration<double, std::milli>(fin - inicio).count();
+
+    std::vector<Solicitud> sub3500(solicitudes.begin(), solicitudes.begin() + 3500);
+    inicio = std::chrono::high_resolution_clock::now();
+    mergeSort(sub3500, 0, (int)sub3500.size() - 1);
+    fin = std::chrono::high_resolution_clock::now();
+    double ms3500 = std::chrono::duration<double, std::milli>(fin - inicio).count();
+
+    std::vector<Solicitud> sub1000(solicitudes.begin(), solicitudes.begin() + 1000);
+    inicio = std::chrono::high_resolution_clock::now();
+    mergeSort(sub1000, 0, (int)sub1000.size() - 1);
+    fin = std::chrono::high_resolution_clock::now();
+    double ms1000 = std::chrono::duration<double, std::milli>(fin - inicio).count();
+
+    std::cout << "\n MergeSort \n";
+    std::cout << "n=1000 : " << ms1000 << " ms\n";
+    std::cout << "n=3500 : " << ms3500 << " ms\n";
+    std::cout << "n=7043 : " << ms7043 << " ms\n";
+
+    // Busqueda binaria
+    int consultas[] = {72, 60, 45, 30, 12};
+    std::string nombres[] = {"Q_A01","Q_A02","Q_A03","Q_A04","Q_A05"};
+
+    std::cout << "\n Busquedas \n";
+    std::ofstream fileBusquedas("results/busquedas_A.txt");
+    for (int i = 0; i < 5; i++) {
+        int idx = busquedaBinaria(solicitudes, 0, (int)solicitudes.size() - 1, consultas[i]);
+        std::string res = (idx != -1) ? solicitudes[idx].customerID : "No encontrado";
+        std::cout << nombres[i] << " (k=" << consultas[i] << "): " << res << "\n";
+        fileBusquedas << nombres[i] << " k=" << consultas[i] << " -> " << res << "\n";
+    }
+    fileBusquedas.close();
+
+    // Guardar solicitudes ordenadas
+    std::ofstream fileOrdenadas("results/solicitudes_ordenadas.csv");
+    fileOrdenadas << "customerID,tenure,monthlyCharges,totalCharges,churn\n";
+    for (const auto& s : solicitudes) {
+        fileOrdenadas << s.customerID << ","
+                      << s.tenure << ","
+                      << s.monthlyCharges << ","
+                      << s.totalCharges << ","
+                      << (s.churn ? "Yes" : "No") << "\n";
+    }
+    fileOrdenadas.close();
+
+    std::cout << "\nresults/busquedas_A.txt generado\n";
+    std::cout << "results/solicitudes_ordenadas.csv generado\n";
+
+    return 0;
+}
