@@ -5,6 +5,10 @@
 #include "parser.hpp"
 #include "mergesort.hpp"
 #include "binary_search.hpp"
+#include "graph.hpp"
+#include "kruskal.hpp"
+#include <fstream>
+
 
 int main(int argc, char* argv[]) {
     if (argc < 2) {
@@ -82,5 +86,34 @@ int main(int argc, char* argv[]) {
     std::cout << "\nresults/busquedas_A.txt generado\n";
     std::cout << "results/solicitudes_ordenadas.csv generado\n";
 
+    //Modulo B
+
+    //Construit grafo
+    auto aristas = construirGrafo(solicitudes);
+
+    double sumaPesos = 0;
+    for (auto& a : aristas) sumaPesos += a.peso;
+
+    std::cout << "\n Modulo B \n";
+    std::cout << "Nodos: 20 \n";
+    std::cout << "Aristas: " << aristas.size() << "\n";
+    std::cout << "Costo promedio de arista: "
+              << std::fixed << std::setprecision(2)
+              << (sumaPesos / aristas.size()) << "\n";
+
+    auto mst = kruskal(aristas, 20);
+
+    std::cout << "Peso total del MST: " << mst.pesoTotal << "\n";
+    std::cout << "Aristas en el MST : " << mst.aristas.size() << "\n";
+
+    std::ofstream fileMST("results/mst_red.txt");
+    fileMST << "Aristas del MST (nodo_u -- nodo_v, peso):\n";
+    for (auto& a : mst.aristas)
+        fileMST << "  nodo " << a.u << " -- nodo " << a.v
+                << "   peso = " << a.peso << "\n";
+    fileMST << "\nPeso total del MST: " << mst.pesoTotal << "\n";
+    fileMST.close();
+
+    std::cout << "results/mst_red.txt generado\n";
     return 0;
 }

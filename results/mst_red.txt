@@ -1,0 +1,22 @@
+Aristas del MST (nodo_u -- nodo_v, peso):
+  nodo 11 -- nodo 17   peso = 124
+  nodo 13 -- nodo 17   peso = 124
+  nodo 2 -- nodo 17   peso = 125
+  nodo 17 -- nodo 19   peso = 125
+  nodo 7 -- nodo 17   peso = 125
+  nodo 14 -- nodo 17   peso = 125
+  nodo 0 -- nodo 17   peso = 125
+  nodo 15 -- nodo 17   peso = 126
+  nodo 3 -- nodo 17   peso = 126
+  nodo 10 -- nodo 17   peso = 126
+  nodo 1 -- nodo 17   peso = 126
+  nodo 6 -- nodo 17   peso = 126
+  nodo 9 -- nodo 17   peso = 126
+  nodo 8 -- nodo 17   peso = 127
+  nodo 12 -- nodo 17   peso = 127
+  nodo 16 -- nodo 17   peso = 127
+  nodo 17 -- nodo 18   peso = 127
+  nodo 5 -- nodo 17   peso = 127
+  nodo 4 -- nodo 17   peso = 129
+
+Peso total del MST: 2393
